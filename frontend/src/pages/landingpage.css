@@ -1,0 +1,147 @@
+
+.brand-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.navlogin {
+  border: none;
+}
+
+.navsignup {
+  border-radius: 30px;
+  background: linear-gradient(to right, #5778f3, #8367ef);
+  border: none;
+}
+
+.shine-btn {
+  position: relative;
+  background-color: #5778f3;
+  color: white;
+  border: none;
+  overflow: hidden;
+}
+
+.shine {
+  position: absolute;
+  top: 0;
+  left: -70px;
+  height: 100%;
+  width: 50px;
+  background: rgba(255, 255, 255, 0.4);
+  transform: skewX(20deg) translateX(0);
+  transition: transform 0.6s ease;
+}
+
+.shine-btn:hover .shine {
+  transform: skewX(20deg) translateX(300px);
+}
+
+.headshine{
+     background: linear-gradient(
+    90deg,
+    #5778f3,
+    #8367ef,
+    #5778f3
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: slideGradient 4s linear infinite;
+}
+@keyframes slideGradient {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+.hero-section {
+  padding-top: 120px;
+  padding-bottom: 80px;
+}
+
+.hero-content {
+  max-width: 900px;
+}
+
+.hero-text {
+  max-width: 650px;
+}
+
+.maintag {
+  color: #5778f3;
+  border: 1px solid #3f498f;
+  padding: 8px 18px;
+  border-radius: 35px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #2a315e;
+}
+
+.mainhead {
+  font-size: clamp(32px, 6vw, 80px);
+  font-weight: bold;
+  color: white;
+  margin-top: 20px;
+}
+
+
+.feature-card {
+  background-color: #1a212d;
+  border: 1px solid #232a37;
+  border-radius: 20px;
+  transition: 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  border-radius: 18px;
+  background-color: #1a212d;
+  color: #5778f3;
+}
+
+.tagline {
+  max-width: 650px;
+}
+
+
+.how-card {
+  background: transparent;
+  color: #c4c6cb;
+}
+
+.how-icon {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  border-radius: 50%;
+  background: linear-gradient(to right, #5778f3, #8367ef);
+  color: white;
+}
+
+
+.pricecon {
+  background-color: #1a212d;
+  border: 1px solid #232a37;
+  border-radius: 25px;
+  max-width: 900px;
+}
+
+.pricing-text {
+  max-width: 650px;
+}

@@ -1,0 +1,28 @@
+
+.logobox {
+    background: linear-gradient(to right, #5778f3, #8367ef);
+    padding: 5px;
+    border-radius: 50%;
+    border: 1px solid gray;
+}
+
+.logo {
+    font-size: 20px;
+    color: white;
+}
+
+.link {
+    text-decoration: none;
+    color: #c4c6cb;
+}
+
+ol li::marker {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+
+.link:hover {
+    color: #5778f3;
+}
