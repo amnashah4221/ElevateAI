@@ -3,7 +3,6 @@ import React from "react";
 import { LuSparkles } from "react-icons/lu";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import '../components/footer.css';
 
 const Footer = ()=>{
 

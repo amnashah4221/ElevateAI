@@ -59,7 +59,7 @@ const Signup = () => {
       setEmail("");
       setPassword("");
       setRole("");
-      navigate("/dashboard");
+      navigate("/login");
     } catch (error) {
       const message = error.response?.data?.message || "Signup failed";
       if (message.includes("User already exists")) {

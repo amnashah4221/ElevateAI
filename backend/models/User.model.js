@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema(
     bio: String,
     experienceLevel:{
         type: String, 
-        enum: ["Student", "Entry-Level", "Junior", "Senior"],
-        default: "Student"
+        enum: ["Entry-Level", "Mid Level", "Senior", "Lead/Principal"],
+        default: "Entry-Level"
     },
     targetRoles: [String],
     role: {
@@ -39,7 +39,8 @@ const userSchema = new mongoose.Schema(
     },
     createdAt: Date,
     updatedAt: Date
-}
+},
+{timestamps:true}
 );
 
 userSchema.pre("save", async function (){

@@ -84,7 +84,7 @@ const MainNavbar = () => {
 
               <Nav.Link
                 as={Link}
-                to="/logout"
+                to="/"
                 className="d-lg-none text-danger mt-2 border-top pt-3 fw-bold"
               >
                 <LogOut size={20} /> Logout

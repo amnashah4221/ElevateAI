@@ -118,4 +118,143 @@ const refreshToken = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, refreshToken };
+// ==================== UPDATE ROLES ====================
+
+
+const updateRoles = async (req, res)=>{
+  try{
+    const user = await UserModel.findByIdAndUpdate(
+      req.user.id, 
+      {$set: {targetRoles: req.body.targetRoles}},
+      {new: true}
+    );
+    res.status(200).json(user);
+  }
+  catch(error){
+    res.status(500).json({message: "Server Error"})
+  }
+}
+
+// ==================== GET ROLES ====================
+
+const getRoles = async (req, res)=>{
+  try{
+    const user = await UserModel
+    .findById(req.user.id)
+    .select('targetRoles');
+    if(!user){
+      return res.status(404).json({message:"User not found"})
+    }
+    res.status(200).json({targetRoles: user.targetRoles});
+  }
+  catch(error){
+    res.status(500).json({message: "Server Error"})
+  }
+}
+
+// ==================== GET PROFILE ====================
+
+const getprofile = async (req, res)=>{
+  try{
+    const user = await UserModel
+    .findById(req.user.id)
+    .select('bio createdAt updatedAt name targetRoles profilePic experienceLevel');
+    if(!user){
+      return res.status(404).json({message:"User not found"})
+    }
+    res.status(200).json({targetRoles: user.targetRoles, bio: user.bio, 
+      name: user.name, createdAt:user.createdAt, updatedAt: user.updatedAt,
+      profilePic: user.profilePic, experienceLevel: user.experienceLevel
+    });
+  }
+  catch(error){
+    res.status(500).json({message: "Server Error"})
+  }
+}
+
+
+// ==================== UPDATE PROFILE ====================
+
+
+const updateProfile = async (req, res)=>{
+  try{
+     const updateData = {
+      name: req.body.name,
+      bio: req.body.bio,
+      experienceLevel: req.body.experienceLevel,
+      targetRoles: req.body.targetRoles
+    };
+
+     if (req.body.profilePic) {
+      updateData.profilePic = req.body.profilePic;
+    }
+
+     const user = await UserModel.findByIdAndUpdate(
+      req.user.id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(user);
+  }
+  catch(error){
+    res.status(500).json({message: "Server Error"})
+  }
+}
+
+
+const getexperiencelevel = (req, res) =>{
+
+  try{
+    const levels = UserModel.schema.path("experienceLevel").enumValues;
+    res.status(200).json({levels});
+  }
+
+  catch(error){
+    res.status(500).json({message: "Server Error"})
+  }
+}
+
+const updatepassword = async (req, res)=>{
+  try{
+    const {currentPassword, newPassword} = req.body;
+    const user = await UserModel.findById(req.user.id);
+    if(!user){
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await user.matchPassword(currentPassword);
+    if(!isMatch){
+      return res.status(400).json({ message: "Old Password is wrong" });
+    }
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({ message: "Password updated successfully!" });
+  }
+  catch(error){
+     res.status(500).json({message: "Server Error"})
+  }
+}
+
+
+const deleteAccount = async (req, res)=>{
+  try{
+    const user = await UserModel.findByIdAndDelete(req.user.id);
+
+    if(!user){
+      return res.status(404).json({message: "USer not found"});
+    }
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    })
+
+    res.status(200).json({message:"Account deleted successfully"})
+  }
+  catch(error){
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+export { registerUser, loginUser, refreshToken, updateRoles, getRoles, getprofile, updateProfile, getexperiencelevel, updatepassword, deleteAccount };
