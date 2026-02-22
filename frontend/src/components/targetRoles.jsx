@@ -4,21 +4,28 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useTargetRoles from "../hooks/useTargetRoles";
 
-const Targetroles = () => {
+const Targetroles = ({ initialRoles, onUpdate }) => {
   const [showModal, setShowModal] = useState(false);
-  const [roles, setRoles] = useState([]);
-  const [currentInput, setCurrentInput] = useState("");
+  
+  const {
+    roles,
+    setRoles,
+    currentInput,
+    setCurrentInput,
+    addRole,
+    removeRole,
+  } = useTargetRoles(initialRoles || []);
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
 
-  const addRoleToList = () => {
-    if (currentInput.trim() && !roles.includes(currentInput)) {
-      setRoles([...roles, currentInput.trim()]);
-      setCurrentInput("");
+  useEffect(() => {
+    if (initialRoles) {
+      setRoles(initialRoles);
     }
-  };
+  }, [initialRoles, setRoles]);
 
   const saveRolesToBackend = async () => {
     try {
@@ -26,40 +33,17 @@ const Targetroles = () => {
       await axios.put(
         "http://localhost:5000/api/auth/updateroles",
         { targetRoles: roles },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("Roles update successfully");
+      if (onUpdate) onUpdate(roles);
+      toast.success("Roles updated successfully");
       handleClose();
     } catch (error) {
-      console.log("Error saving roles", error);
+      console.error("Error saving roles", error);
+      toast.error("Failed to save roles");
     }
   };
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-          console.log("No token found");
-          return;
-        }
-        const response = await axios.get(
-          "http://localhost:5000/api/auth/getroles",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-
-        if (response.data && response.data.targetRoles) {
-          setRoles(response.data.targetRoles);
-        }
-      } catch (error) {
-        console.error("Error fetching Roles", error);
-        toast.error("Failed to load your profile roles");
-      }
-    };
-    fetchRoles();
-  }, []);
   return (
     <>
       <div
@@ -73,7 +57,7 @@ const Targetroles = () => {
           color: "#fff",
         }}
       >
-        <div className="d-flex align-items-center  justify-content-between mb-4 px-2">
+        <div className="d-flex align-items-center justify-content-between mb-4 px-2">
           <div className="d-flex align-items-center">
             <FaBriefcase
               style={{
@@ -82,57 +66,41 @@ const Targetroles = () => {
                 marginRight: "12px",
               }}
             />
-            <h4
-              className="mb-0"
-              style={{ fontWeight: "600", fontSize: "1.25rem" }}
-            >
+            <h4 className="mb-0" style={{ fontWeight: "600", fontSize: "1.25rem" }}>
               Target Roles
             </h4>
           </div>
           <button
             className="btn btn-link text-decoration-none p-0"
-            style={{
-              color: "#3b82f6",
-              fontSize: "0.9rem",
-              fontWeight: "500",
-            }}
+            style={{ color: "#3b82f6", fontSize: "0.9rem", fontWeight: "500" }}
             onClick={handleShow}
           >
             <FaPlus size={12} className="me-1" /> Add Role
           </button>
         </div>
+
         <div className="text-center py-4">
-          {roles.length === 0 ? (
-            <p style={{ color: "#747475" }}>
-              No target roles added yet. Add roles to get tailored
-              recommendations.
-            </p>
-          ) : (
+          {roles && roles.length > 0 ? (
             <div className="d-flex flex-wrap gap-3 justify-content-center">
               {roles.map((role, index) => (
                 <Badge
                   key={index}
-                  style={{
-                    backgroundColor: "#3b82f6",
-                    fontSize: "14px",
-                    padding: "10px 12px",
-                  }}
+                  style={{ backgroundColor: "#3b82f6", fontSize: "14px", padding: "10px 12px" }}
                   pill
                 >
                   {role}
                 </Badge>
               ))}
             </div>
+          ) : (
+            <p style={{ color: "#747475" }}>
+              No target roles added yet. Add roles to get tailored recommendations.
+            </p>
           )}
         </div>
       </div>
 
-      <Modal
-        show={showModal}
-        onHide={handleClose}
-        centered
-        contentClassName="border-0"
-      >
+      <Modal show={showModal} onHide={handleClose} centered contentClassName="border-0">
         <div
           style={{
             backgroundColor: "#121825",
@@ -143,9 +111,7 @@ const Targetroles = () => {
           }}
         >
           <Modal.Header closeButton closeVariant="white" className="border-0">
-            <Modal.Title className="text-white fs-5">
-              Manage Target Roles
-            </Modal.Title>
+            <Modal.Title className="text-white fs-5">Manage Target Roles</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -156,22 +122,21 @@ const Targetroles = () => {
                 className="bg-dark border-secondary text-white shadow-none"
                 value={currentInput}
                 onChange={(e) => setCurrentInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && addRoleToList()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addRole();
+                  }
+                }}
               />
-              <Button
-                variant="primary"
-                className="rounded-circle"
-                onClick={addRoleToList}
-              >
+              <Button variant="primary" className="rounded-circle" onClick={addRole}>
                 <FaPlus />
               </Button>
             </div>
 
             <div className="mb-4">
               {roles.length === 0 ? (
-                <p className="text-muted fst-italic small">
-                  No target roles added yet
-                </p>
+                <p className="text-muted fst-italic small">No target roles added yet</p>
               ) : (
                 <div className="d-flex flex-wrap gap-2">
                   {roles.map((role, index) => (
@@ -182,9 +147,7 @@ const Targetroles = () => {
                     >
                       {role}{" "}
                       <FaTimes
-                        onClick={() =>
-                          setRoles(roles.filter((r) => r !== role))
-                        }
+                        onClick={() => removeRole(role)}
                         style={{ cursor: "pointer", fontSize: "16px" }}
                       />
                     </Badge>
@@ -195,18 +158,10 @@ const Targetroles = () => {
 
             <hr className="border-secondary" />
             <div className="d-flex gap-2 justify-content-end">
-              <Button
-                variant="outline-secondary"
-                className="rounded-pill px-4"
-                onClick={handleClose}
-              >
+              <Button variant="outline-secondary" className="rounded-pill px-4" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button
-                variant="primary"
-                className="rounded-pill px-4"
-                onClick={saveRolesToBackend}
-              >
+              <Button variant="primary" className="rounded-pill px-4" onClick={saveRolesToBackend}>
                 Save Roles
               </Button>
             </div>
@@ -216,4 +171,5 @@ const Targetroles = () => {
     </>
   );
 };
+
 export default Targetroles;

@@ -2,6 +2,16 @@ import UserModel from "../models/User.model.js";
 import { generateAccessToken, generateRefreshToken } from '../utils/generateToken.js';
 import jwt from 'jsonwebtoken';
 
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,                // production me true
+  sameSite: isProduction ? "none" : "lax",  // 🔥 IMPORTANT FIX
+  maxAge: 7 * 24 * 60 * 60 * 1000
+};
+
 // ==================== REGISTER ====================
 const registerUser = async (req, res) => {
   try {
@@ -35,12 +45,7 @@ const registerUser = async (req, res) => {
       const refreshToken = generateRefreshToken(user._id);
 
       // Set refresh token cookie
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-      });
+      res.cookie('refreshToken', refreshToken, refreshCookieOptions);
 
       // Send response with accessToken
       res.status(201).json({
@@ -73,12 +78,7 @@ const loginUser = async (req, res) => {
       const refreshToken = generateRefreshToken(user._id);
 
       // Set refresh token cookie
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-      });
+      res.cookie('refreshToken', refreshToken, refreshCookieOptions);
 
       // Send response with accessToken
       res.json({
@@ -86,7 +86,7 @@ const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateAccessToken(user._id, user.role)
+        accessToken
       });
     } else {
       res.status(401).json({ message: "Invalid email or password" });
@@ -247,8 +247,8 @@ const deleteAccount = async (req, res)=>{
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
     })
 
     res.status(200).json({message:"Account deleted successfully"})

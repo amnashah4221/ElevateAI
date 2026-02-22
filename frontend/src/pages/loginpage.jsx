@@ -33,7 +33,7 @@ const Login = () => {
         {email, password},
         {withCredentials: true}
       );
-      localStorage.setItem("accessToken", response.data.token);
+      localStorage.setItem("accessToken", response.data.accessToken);
       toast.success("Login Successful!");
       navigate('/dashboard');
     }

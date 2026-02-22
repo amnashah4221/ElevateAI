@@ -16,17 +16,17 @@ import "./landingpage.css";
 const Landingpage = () => {
   return (
     <>
-      <Navbar expand="lg" fixed="top" bg="dark" variant="dark" className="py-3">
+      <Navbar expand="lg" fixed="top" bg="dark"  className="py-3">
         <Container>
           <Navbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
            <Logo/>
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="main-navbar" />
+          <Navbar.Toggle aria-controls="main-navbar" className="text-light"/>
           <Navbar.Collapse id="main-navbar">
             <Nav className="mx-auto text-center">
-              <Nav.Link href="#features">Features</Nav.Link>
-              <Nav.Link href="#howitworks">How it Works</Nav.Link>
-              <Nav.Link href="#pricing">Pricing</Nav.Link>
+              <Nav.Link href="#features" className="text-light">Features</Nav.Link>
+              <Nav.Link href="#howitworks" className="text-light">How it Works</Nav.Link>
+              <Nav.Link href="#pricing" className="text-light">Pricing</Nav.Link>
             </Nav>
             <div className="d-flex flex-column flex-lg-row gap-2 mt-3 mt-lg-0">
               <Button as={Link} to="/login"className="navlogin bg-transparent text-light"> Log In </Button>

@@ -28,7 +28,7 @@ function App() {
         <Route path='/profile' element={<Profilepage/>}/>
      </Routes>
          
-      <ToastContainer position="top-right" autoClose={3000}/>
+      <ToastContainer position="top-right" autoClose={3000} theme='dark'/>
    
       </BrowserRouter>
     </div>
